@@ -1,0 +1,5 @@
+- Produits (pagination, recherche)
+  - [id] (fiche produit)
+- Panier
+- Connexion
+- Inscription
