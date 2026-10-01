@@ -1,4 +1,5 @@
 import type { DummyJsonCategory, DummyJsonProduct, DummyJsonProductListResponse } from '#types/dummyjson'
+import { hasStatusCode } from '#shared/errors'
 import { SORT_OPTIONS, type SortOption } from '#shared/products'
 
 const DUMMYJSON_BASE = 'https://dummyjson.com'
@@ -44,3 +45,19 @@ export const getUpstreamCategories = defineCachedFunction(
     getKey: () => 'all'
   }
 )
+
+async function fetchUpstreamProduct(id: number): Promise<DummyJsonProduct> {
+  try {
+    return await $fetch<DummyJsonProduct>(`${DUMMYJSON_BASE}/products/${id}`)
+  } catch (error) {
+    throw hasStatusCode(error, 404)
+      ? createError({ statusCode: 404, statusMessage: 'Produit introuvable' })
+      : createError({ statusCode: 502, statusMessage: 'Service produits indisponible' })
+  }
+}
+
+export const getUpstreamProduct = defineCachedFunction(fetchUpstreamProduct, {
+  name: 'dummyjson-product',
+  maxAge: 60,
+  getKey: (id: number) => String(id)
+})
