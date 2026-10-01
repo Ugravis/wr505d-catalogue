@@ -17,8 +17,8 @@ describe('getStockStatus', () => {
   })
 
   it('treats 5 items or more as in stock', () => {
-    expect(getStockStatus(5)).toEqual({ kind: 'in' })
-    expect(getStockStatus(120)).toEqual({ kind: 'in' })
+    expect(getStockStatus(5)).toEqual({ kind: 'in', remaining: 5 })
+    expect(getStockStatus(120)).toEqual({ kind: 'in', remaining: 120 })
   })
 })
 
@@ -26,7 +26,7 @@ describe('getStockLabel', () => {
   it('labels each status', () => {
     expect(getStockLabel(getStockStatus(0))).toBe('Rupture de stock')
     expect(getStockLabel(getStockStatus(3))).toBe('Plus que 3 en stock')
-    expect(getStockLabel(getStockStatus(50))).toBe('En stock')
+    expect(getStockLabel(getStockStatus(50))).toBe('50 en stock')
   })
 })
 
