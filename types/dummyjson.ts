@@ -50,3 +50,9 @@ export interface DummyJsonProductListResponse {
   skip: number
   limit: number
 }
+
+export interface DummyJsonCategory {
+  slug: string
+  name: string
+  url: string
+}

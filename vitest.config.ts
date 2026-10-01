@@ -6,6 +6,12 @@ export default defineConfig({
   test: {
     projects: [
       {
+        resolve: {
+          alias: {
+            '#shared': fileURLToPath(new URL('./shared', import.meta.url)),
+            '#types': fileURLToPath(new URL('./types', import.meta.url)),
+          },
+        },
         test: {
           name: 'unit',
           include: ['test/unit/*.{test,spec}.ts'],

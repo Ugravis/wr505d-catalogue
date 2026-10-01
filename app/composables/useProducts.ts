@@ -1,31 +1,40 @@
-import type { DummyJsonProductListResponse } from '#types/dummyjson'
+import { PRODUCTS_PAGE_SIZE, type ProductsApiResponse, type SortOption } from '#shared/products'
 
-export const PRODUCTS_PAGE_SIZE = 12
+export { PRODUCTS_PAGE_SIZE }
 
-export function buildProductsRequest(page: number, search: string) {
-  const query = search.trim()
-  const endpoint = query ? 'https://dummyjson.com/products/search' : 'https://dummyjson.com/products'
+export interface ProductsFilters {
+  page: number
+  search: string
+  category: string
+  minPrice?: number
+  maxPrice?: number
+  sort: SortOption
+}
 
+export function buildProductsRequest(filters: ProductsFilters) {
   return {
-    endpoint,
+    endpoint: '/api/products',
     query: {
-      limit: PRODUCTS_PAGE_SIZE,
-      skip: (page - 1) * PRODUCTS_PAGE_SIZE,
-      ...(query ? { q: query } : {})
+      page: filters.page,
+      q: filters.search || undefined,
+      category: filters.category || undefined,
+      minPrice: filters.minPrice,
+      maxPrice: filters.maxPrice,
+      sort: filters.sort
     }
   }
 }
 
-export function useProducts(page: Ref<number>, search: Ref<string>) {
-  const { data, pending, error, refresh } = useAsyncData<DummyJsonProductListResponse>(
+export function useProducts(filters: Ref<ProductsFilters>) {
+  const { data, pending, error, refresh } = useAsyncData<ProductsApiResponse>(
     'products-list',
     () => {
-      const { endpoint, query } = buildProductsRequest(page.value, search.value)
-      return $fetch<DummyJsonProductListResponse>(endpoint, { query })
+      const { endpoint, query } = buildProductsRequest(filters.value)
+      return $fetch<ProductsApiResponse>(endpoint, { query })
     },
     {
-      watch: [page, search],
-      default: () => ({ products: [], total: 0, skip: 0, limit: PRODUCTS_PAGE_SIZE })
+      watch: [filters],
+      default: () => ({ products: [], total: 0 })
     }
   )
 

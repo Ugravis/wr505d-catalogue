@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Star } from 'lucide-vue-next'
+import { Star } from '@lucide/vue'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import type { DummyJsonProduct } from '#types/dummyjson'
 
