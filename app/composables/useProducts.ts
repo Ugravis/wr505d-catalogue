@@ -37,7 +37,7 @@ export function useProducts(page: Ref<number>, search: Ref<string>) {
     products,
     total,
     pending,
-    error: computed(() => error.value !== null),
+    error: computed(() => error.value != null),
     pageCount,
     refresh
   }
