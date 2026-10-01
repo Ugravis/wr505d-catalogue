@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { Star } from '@lucide/vue'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import { formatPrice } from '@/utils/formatPrice'
 import type { DummyJsonProduct } from '#types/dummyjson'
 
 defineProps<{
   product: DummyJsonProduct
 }>()
-
-const priceFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'USD' })
 </script>
 
 <template>
-  <Card class="flex h-full flex-col overflow-hidden py-0">
+  <Card class="relative flex h-full flex-col overflow-hidden py-0">
     <div class="aspect-square w-full overflow-hidden bg-muted">
       <img
         :src="product.thumbnail"
@@ -21,7 +20,9 @@ const priceFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', curre
       >
     </div>
     <CardHeader class="pt-4">
-      <CardTitle class="line-clamp-2 text-base">{{ product.title }}</CardTitle>
+      <CardTitle class="line-clamp-2 text-base">
+        <NuxtLink :to="`/produits/${product.id}`" class="after:absolute after:inset-0">{{ product.title }}</NuxtLink>
+      </CardTitle>
     </CardHeader>
     <CardContent class="flex-1">
       <div class="flex items-center gap-1 text-sm text-muted-foreground">
@@ -30,7 +31,7 @@ const priceFormatter = new Intl.NumberFormat('fr-FR', { style: 'currency', curre
       </div>
     </CardContent>
     <CardFooter class="pb-4">
-      <span class="text-lg font-semibold">{{ priceFormatter.format(product.price) }}</span>
+      <span class="text-lg font-semibold">{{ formatPrice(product.price) }}</span>
     </CardFooter>
   </Card>
 </template>
