@@ -35,7 +35,7 @@ export default defineConfig({
     coverage: {
       enabled: true,
       provider: 'v8',
-      include: ['utils/promotions.ts'],
+      include: ['app/utils/promotions.ts'],
       thresholds: {
         lines: 90,
         branches: 90,

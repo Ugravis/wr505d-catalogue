@@ -14,7 +14,8 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCartItems } from '@/composables/useCartItems'
-import { formatPrice } from '@/utils/formatPrice'
+import { useCartSummary } from '@/composables/useCartSummary'
+import { formatPrice, formatPriceCents } from '@/utils/formatPrice'
 
 useSeoMeta({
   title: 'Panier',
@@ -22,7 +23,15 @@ useSeoMeta({
 })
 
 const cart = useCartStore()
-const { lines, pending, total, refresh } = useCartItems()
+const { lines, pending, refresh } = useCartItems()
+
+const promoInput = ref('')
+const appliedPromoCode = ref('')
+const summary = useCartSummary(lines, appliedPromoCode)
+
+function applyPromoCode() {
+  appliedPromoCode.value = promoInput.value.trim()
+}
 
 const errors = reactive(new Map<number, string>())
 
@@ -128,7 +137,7 @@ function remove(productId: number) {
         </li>
       </ul>
 
-      <div class="mt-8 flex items-center justify-between border-t pt-6">
+      <div class="mt-8 flex flex-col gap-6 border-t pt-6 md:flex-row md:items-start md:justify-between">
         <AlertDialog>
           <AlertDialogTrigger as-child>
             <Button variant="ghost">Vider le panier</Button>
@@ -146,7 +155,39 @@ function remove(productId: number) {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <p class="text-xl font-semibold">Total : {{ formatPrice(total) }}</p>
+
+        <div class="flex w-full flex-col gap-4 md:max-w-sm">
+          <form class="flex flex-col gap-1.5" @submit.prevent="applyPromoCode">
+            <label for="promo-code" class="text-sm font-medium">Code promo</label>
+            <div class="flex gap-2">
+              <Input id="promo-code" v-model="promoInput" placeholder="TROYES10" autocomplete="off" />
+              <Button type="submit" variant="outline">Appliquer</Button>
+            </div>
+          </form>
+
+          <ul v-if="summary.messages.length > 0" class="flex flex-col gap-1 text-sm text-destructive">
+            <li v-for="message in summary.messages" :key="message">{{ message }}</li>
+          </ul>
+
+          <dl class="flex flex-col gap-2 text-sm">
+            <div class="flex justify-between">
+              <dt>Sous-total</dt>
+              <dd>{{ formatPriceCents(summary.grossCents) }}</dd>
+            </div>
+            <div v-for="discount in summary.discounts" :key="discount.id" class="flex justify-between text-green-600">
+              <dt>{{ discount.label }}</dt>
+              <dd>−{{ formatPriceCents(discount.amountCents) }}</dd>
+            </div>
+            <div class="flex justify-between">
+              <dt>Livraison</dt>
+              <dd>{{ summary.shippingCents === 0 ? 'Offerte' : formatPriceCents(summary.shippingCents) }}</dd>
+            </div>
+            <div class="flex justify-between border-t pt-2 text-xl font-semibold">
+              <dt>Total</dt>
+              <dd>{{ formatPriceCents(summary.totalCents) }}</dd>
+            </div>
+          </dl>
+        </div>
       </div>
     </template>
   </div>
