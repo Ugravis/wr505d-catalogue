@@ -4,6 +4,7 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import ProductGallery from '@/components/ProductGallery.vue'
+import ProductPromoBadges from '@/components/ProductPromoBadges.vue'
 import ProductStock from '@/components/ProductStock.vue'
 import { useProduct } from '@/composables/useProduct'
 import { formatPrice } from '@/utils/formatPrice'
@@ -98,6 +99,7 @@ useSeoMeta({
         </div>
 
         <p class="text-3xl font-semibold">{{ formatPrice(product.price) }}</p>
+        <ProductPromoBadges :product="product" />
 
         <p class="text-muted-foreground">{{ product.description }}</p>
 

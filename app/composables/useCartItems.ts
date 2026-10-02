@@ -29,9 +29,5 @@ export function useCartItems() {
     { watch: [() => cart.items], default: () => [] }
   )
 
-  const total = computed(() => data.value
-    .filter(line => line.status === 'ok')
-    .reduce((sum, line) => sum + line.product.price * line.quantity, 0))
-
-  return { lines: data, pending, total, refresh }
+  return { lines: data, pending, refresh }
 }

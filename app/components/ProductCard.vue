@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Star } from '@lucide/vue'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
+import ProductPromoBadges from '@/components/ProductPromoBadges.vue'
 import { formatPrice } from '@/utils/formatPrice'
 import type { DummyJsonProduct } from '#types/dummyjson'
 
@@ -24,7 +25,8 @@ defineProps<{
         <NuxtLink :to="`/produits/${product.id}`" class="after:absolute after:inset-0">{{ product.title }}</NuxtLink>
       </CardTitle>
     </CardHeader>
-    <CardContent class="flex-1">
+    <CardContent class="flex flex-1 flex-col gap-2">
+      <ProductPromoBadges :product="product" />
       <div class="flex items-center gap-1 text-sm text-muted-foreground">
         <Star class="size-4 fill-yellow-400 text-yellow-400" />
         <span>{{ product.rating.toFixed(1) }}</span>
