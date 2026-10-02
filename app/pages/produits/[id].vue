@@ -104,16 +104,19 @@ useSeoMeta({
         <div class="flex flex-col gap-3">
           <ProductStock :stock="product.stock" />
 
-          <div class="flex items-center gap-3">
-            <Input
-              v-model="quantityInput"
-              type="number"
-              min="1"
-              :max="product.stock"
-              class="w-20"
-              :disabled="isOutOfStock"
-              aria-label="Quantité"
-            />
+          <div class="flex items-end gap-3">
+            <div class="flex flex-col gap-1.5">
+              <label for="quantity" class="text-xs text-muted-foreground">Quantité</label>
+              <Input
+                id="quantity"
+                v-model="quantityInput"
+                type="number"
+                min="1"
+                :max="product.stock"
+                class="w-20"
+                :disabled="isOutOfStock"
+              />
+            </div>
             <Button size="lg" class="flex-1 sm:w-fit sm:flex-none" :disabled="isOutOfStock" @click="addToCart">
               {{ isOutOfStock ? 'Rupture de stock' : 'Ajouter au panier' }}
             </Button>

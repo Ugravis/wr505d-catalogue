@@ -1,5 +1,16 @@
 <script setup lang="ts">
 import { Minus, Plus, RotateCw, ShoppingCart, Trash2 } from '@lucide/vue'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { useCartItems } from '@/composables/useCartItems'
@@ -85,7 +96,6 @@ function remove(productId: number) {
                 <Button
                   size="icon"
                   variant="outline"
-                  :disabled="line.quantity >= line.product.stock"
                   aria-label="Augmenter la quantité"
                   @click="updateQuantity(line.productId, line.quantity + 1, line.product.stock)"
                 >
@@ -119,7 +129,23 @@ function remove(productId: number) {
       </ul>
 
       <div class="mt-8 flex items-center justify-between border-t pt-6">
-        <Button variant="ghost" @click="cart.clear">Vider le panier</Button>
+        <AlertDialog>
+          <AlertDialogTrigger as-child>
+            <Button variant="ghost">Vider le panier</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Vider le panier ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tous les articles de votre panier seront retirés. Cette action est irréversible.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction @click="cart.clear">Vider le panier</AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <p class="text-xl font-semibold">Total : {{ formatPrice(total) }}</p>
       </div>
     </template>
