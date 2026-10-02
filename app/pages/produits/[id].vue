@@ -2,6 +2,7 @@
 import { ArrowLeft, RotateCw, ShieldCheck, Star, Truck } from '@lucide/vue'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
 import ProductGallery from '@/components/ProductGallery.vue'
 import ProductStock from '@/components/ProductStock.vue'
 import { useProduct } from '@/composables/useProduct'
@@ -22,7 +23,32 @@ await ready
 
 if (notFound.value) throwNotFound()
 
+const cart = useCartStore()
+const quantityInput = ref<string | number>(1)
+const addToCartError = ref('')
+const addedToCart = ref(false)
+
 const isOutOfStock = computed(() => product.value != null && getStockStatus(product.value.stock).kind === 'out')
+
+watch(product, () => {
+  quantityInput.value = 1
+  addToCartError.value = ''
+  addedToCart.value = false
+})
+
+function addToCart() {
+  if (!product.value) return
+
+  const quantity = Math.max(1, Math.floor(Number(quantityInput.value)) || 1)
+  const result = cart.addItem(product.value.id, product.value.stock, quantity)
+  if (result.success) {
+    addToCartError.value = ''
+    addedToCart.value = true
+  } else {
+    addedToCart.value = false
+    addToCartError.value = result.message
+  }
+}
 const images = computed(() => {
   if (!product.value) return []
   return product.value.images.length > 0 ? product.value.images : [product.value.thumbnail]
@@ -77,9 +103,24 @@ useSeoMeta({
 
         <div class="flex flex-col gap-3">
           <ProductStock :stock="product.stock" />
-          <Button size="lg" class="w-full sm:w-fit" :disabled="isOutOfStock">
-            {{ isOutOfStock ? 'Rupture de stock' : 'Ajouter au panier' }}
-          </Button>
+
+          <div class="flex items-center gap-3">
+            <Input
+              v-model="quantityInput"
+              type="number"
+              min="1"
+              :max="product.stock"
+              class="w-20"
+              :disabled="isOutOfStock"
+              aria-label="Quantité"
+            />
+            <Button size="lg" class="flex-1 sm:w-fit sm:flex-none" :disabled="isOutOfStock" @click="addToCart">
+              {{ isOutOfStock ? 'Rupture de stock' : 'Ajouter au panier' }}
+            </Button>
+          </div>
+
+          <p v-if="addToCartError" class="text-sm text-destructive">{{ addToCartError }}</p>
+          <p v-else-if="addedToCart" class="text-sm text-muted-foreground">Ajouté au panier.</p>
         </div>
 
         <ul class="mt-2 flex flex-col gap-3 rounded-lg border p-4 text-sm">
