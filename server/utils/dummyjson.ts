@@ -1,4 +1,13 @@
-import type { DummyJsonCategory, DummyJsonProduct, DummyJsonProductListResponse } from '#types/dummyjson'
+import type {
+  DummyJsonCategory,
+  DummyJsonLoginRequest,
+  DummyJsonLoginResponse,
+  DummyJsonProduct,
+  DummyJsonProductListResponse,
+  DummyJsonRefreshResponse,
+  DummyJsonUser
+} from '#types/dummyjson'
+import { ACCESS_TOKEN_MAX_AGE } from '#shared/auth'
 import { hasStatusCode } from '#shared/errors'
 import { SORT_OPTIONS, type SortOption } from '#shared/products'
 
@@ -61,3 +70,51 @@ export const getUpstreamProduct = defineCachedFunction(fetchUpstreamProduct, {
   maxAge: 60,
   getKey: (id: number) => String(id)
 })
+
+/**
+ * DummyJSON's `/auth/me` returns the full user record (including the
+ * plaintext `password` and other PII), not just the trimmed shape its own
+ * `/auth/login` response uses. Pick only the known-safe fields so nothing
+ * extra ever leaks through the BFF to the client.
+ */
+function pickUser(user: DummyJsonUser): DummyJsonUser {
+  const { id, username, email, firstName, lastName, gender, image } = user
+  return { id, username, email, firstName, lastName, gender, image }
+}
+
+export async function loginUpstream(body: DummyJsonLoginRequest): Promise<DummyJsonLoginResponse> {
+  try {
+    const response = await $fetch<DummyJsonLoginResponse>(`${DUMMYJSON_BASE}/auth/login`, { method: 'POST', body })
+    return { ...pickUser(response), accessToken: response.accessToken, refreshToken: response.refreshToken }
+  } catch (error) {
+    throw hasStatusCode(error, 400)
+      ? createError({ statusCode: 401, statusMessage: 'Identifiants invalides' })
+      : createError({ statusCode: 502, statusMessage: 'Service d\'authentification indisponible' })
+  }
+}
+
+export async function fetchMeUpstream(accessToken: string): Promise<DummyJsonUser> {
+  try {
+    const user = await $fetch<DummyJsonUser>(`${DUMMYJSON_BASE}/auth/me`, {
+      headers: { Authorization: `Bearer ${accessToken}` }
+    })
+    return pickUser(user)
+  } catch (error) {
+    throw hasStatusCode(error, 401)
+      ? createError({ statusCode: 401, statusMessage: 'Session invalide' })
+      : createError({ statusCode: 502, statusMessage: 'Service d\'authentification indisponible' })
+  }
+}
+
+export async function refreshUpstream(refreshToken: string): Promise<DummyJsonRefreshResponse> {
+  try {
+    return await $fetch<DummyJsonRefreshResponse>(`${DUMMYJSON_BASE}/auth/refresh`, {
+      method: 'POST',
+      body: { refreshToken, expiresInMins: ACCESS_TOKEN_MAX_AGE / 60 }
+    })
+  } catch (error) {
+    throw hasStatusCode(error, 401) || hasStatusCode(error, 403)
+      ? createError({ statusCode: 401, statusMessage: 'Session expirée' })
+      : createError({ statusCode: 502, statusMessage: 'Service d\'authentification indisponible' })
+  }
+}
