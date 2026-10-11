@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Moon, ShoppingCart, Sun, User } from '@lucide/vue'
+import { Flower, Moon, ShoppingCart, Sun, User } from '@lucide/vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -11,7 +11,8 @@ const { theme, toggle: toggleTheme } = useColorMode()
 <template>
   <header class="border-b">
     <div class="mx-auto flex max-w-6xl items-center justify-between px-4 py-4">
-      <NuxtLink to="/produits" class="text-lg font-semibold">
+      <NuxtLink to="/produits" class="flex items-center gap-2 text-lg font-semibold">
+        <Flower class="size-5 text-primary" aria-hidden="true" />
         ChampaShop
       </NuxtLink>
 
