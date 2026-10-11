@@ -11,6 +11,7 @@ useHead({
 <template>
   <div class="flex min-h-screen flex-col">
     <NuxtRouteAnnouncer />
+    <AppAnnouncementBar />
     <AppHeader />
     <main class="flex-1">
       <NuxtPage />
