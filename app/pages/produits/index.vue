@@ -107,8 +107,8 @@ function resetFilters() {
     <h1 class="mb-6 text-2xl font-bold">Plus de 200 références</h1>
 
     <Card class="mb-8 w-full">
-      <CardContent class="flex flex-nowrap items-end gap-4 overflow-x-auto">
-        <div class="relative w-56 shrink-0">
+      <CardContent class="flex flex-wrap items-end gap-4 sm:flex-nowrap">
+        <div class="relative min-w-40 flex-1">
           <Search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             v-model="searchInput"
