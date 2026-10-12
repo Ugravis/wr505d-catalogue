@@ -4,6 +4,7 @@ import { RotateCw, Search, SearchX } from '@lucide/vue'
 import type { LocationQueryRaw } from 'vue-router'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationNext, PaginationPrevious } from '@/components/ui/pagination'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -103,63 +104,67 @@ function resetFilters() {
 
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
-    <h1 class="mb-6 text-2xl font-bold">Produits</h1>
+    <h1 class="mb-6 text-2xl font-bold">Plus de 200 références</h1>
 
-    <div class="mb-8 flex flex-wrap items-end gap-4">
-      <div class="relative w-full max-w-sm">
-        <Search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          v-model="searchInput"
-          type="search"
-          placeholder="Rechercher un produit..."
-          class="pl-9"
-          aria-label="Rechercher un produit"
-        />
-      </div>
+    <Card class="mb-8 w-full">
+      <CardContent class="flex flex-wrap items-end gap-4 sm:flex-nowrap">
+        <div class="relative min-w-40 flex-1">
+          <Search class="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            v-model="searchInput"
+            type="search"
+            placeholder="Rechercher un produit..."
+            class="pl-9"
+            aria-label="Rechercher un produit"
+          />
+        </div>
 
-      <div class="flex flex-col gap-1.5">
-        <label for="category" class="text-xs text-muted-foreground">Catégorie</label>
-        <Select :model-value="filters.category || 'all'" @update:model-value="(v) => setCategory(String(v))">
-          <SelectTrigger id="category" class="w-44">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Toutes les catégories</SelectItem>
-            <SelectItem v-for="category in categories" :key="category.slug" :value="category.slug">
-              {{ category.name }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <div class="flex shrink-0 flex-col gap-1.5">
+          <label for="category" class="text-xs text-muted-foreground">Catégorie</label>
+          <Select :model-value="filters.category || 'all'" @update:model-value="(v) => setCategory(String(v))">
+            <SelectTrigger id="category" class="w-44">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Toutes les catégories</SelectItem>
+              <SelectItem v-for="category in categories" :key="category.slug" :value="category.slug">
+                {{ category.name }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div class="flex flex-col gap-1.5">
-        <label for="min-price" class="text-xs text-muted-foreground">Prix min</label>
-        <Input id="min-price" v-model="minPriceInput" type="number" min="0" placeholder="0" class="w-24" />
-      </div>
+        <div class="flex shrink-0 flex-col gap-1.5">
+          <label for="sort" class="text-xs text-muted-foreground">Trier par</label>
+          <Select :model-value="filters.sort" @update:model-value="(v) => setSort(String(v))">
+            <SelectTrigger id="sort" class="w-48">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="option in SORT_OPTIONS" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
 
-      <div class="flex flex-col gap-1.5">
-        <label for="max-price" class="text-xs text-muted-foreground">Prix max</label>
-        <Input id="max-price" v-model="maxPriceInput" type="number" min="0" placeholder="999" class="w-24" />
-      </div>
+        <Button v-if="hasActiveFilters" variant="ghost" size="sm" class="shrink-0" @click="resetFilters">
+          Réinitialiser les filtres
+        </Button>
 
-      <div class="flex flex-col gap-1.5">
-        <label for="sort" class="text-xs text-muted-foreground">Trier par</label>
-        <Select :model-value="filters.sort" @update:model-value="(v) => setSort(String(v))">
-          <SelectTrigger id="sort" class="w-48">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="option in SORT_OPTIONS" :key="option.value" :value="option.value">
-              {{ option.label }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
+        <div class="ml-auto flex shrink-0 items-end gap-4">
+          <div class="flex flex-col gap-1.5">
+            <label for="min-price" class="text-xs text-muted-foreground">Prix min</label>
+            <Input id="min-price" v-model="minPriceInput" type="number" min="0" placeholder="0" class="w-24" />
+          </div>
 
-      <Button v-if="hasActiveFilters" variant="ghost" size="sm" @click="resetFilters">
-        Réinitialiser les filtres
-      </Button>
-    </div>
+          <div class="flex flex-col gap-1.5">
+            <label for="max-price" class="text-xs text-muted-foreground">Prix max</label>
+            <Input id="max-price" v-model="maxPriceInput" type="number" min="0" placeholder="999" class="w-24" />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
 
     <Alert v-if="error" variant="destructive" class="mb-8">
       <AlertTitle>Une erreur réseau est survenue</AlertTitle>
