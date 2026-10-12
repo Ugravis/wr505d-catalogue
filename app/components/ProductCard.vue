@@ -8,6 +8,8 @@ import type { DummyJsonProduct } from '#types/dummyjson'
 defineProps<{
   product: DummyJsonProduct
 }>()
+
+const route = useRoute()
 </script>
 
 <template>
@@ -22,7 +24,7 @@ defineProps<{
     </div>
     <CardHeader class="pt-4">
       <CardTitle class="line-clamp-2 text-base">
-        <NuxtLink :to="`/produits/${product.id}`" class="after:absolute after:inset-0">{{ product.title }}</NuxtLink>
+        <NuxtLink :to="{ path: `/produits/${product.id}`, query: route.query }" class="after:absolute after:inset-0">{{ product.title }}</NuxtLink>
       </CardTitle>
     </CardHeader>
     <CardContent class="flex flex-1 flex-col gap-2">

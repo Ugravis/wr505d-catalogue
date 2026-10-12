@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { CART_COOKIE_MAX_AGE, CART_COOKIE_NAME, fitsInCookie, type CartActionResult, type CartItem } from '#shared/cart'
+import { CART_COOKIE_MAX_AGE, CART_COOKIE_NAME, CART_PROMO_COOKIE_NAME, fitsInCookie, type CartActionResult, type CartItem } from '#shared/cart'
 
 export const useCartStore = defineStore('cart', () => {
   const items = useCookie<CartItem[]>(CART_COOKIE_NAME, {
@@ -8,6 +8,17 @@ export const useCartStore = defineStore('cart', () => {
     sameSite: 'lax',
     path: '/'
   })
+
+  const promoCode = useCookie<string>(CART_PROMO_COOKIE_NAME, {
+    default: () => '',
+    maxAge: CART_COOKIE_MAX_AGE,
+    sameSite: 'lax',
+    path: '/'
+  })
+
+  function applyPromoCode(code: string) {
+    promoCode.value = code.trim()
+  }
 
   const itemCount = computed(() => items.value.reduce((sum, item) => sum + item.quantity, 0))
 
@@ -73,6 +84,8 @@ export const useCartStore = defineStore('cart', () => {
     addItem,
     setQuantity,
     removeItem,
-    clear
+    clear,
+    promoCode,
+    applyPromoCode
   }
 })

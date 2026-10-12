@@ -1,5 +1,6 @@
 export const CART_COOKIE_NAME = 'cart'
 export const CART_COOKIE_MAX_AGE = 60 * 60 * 24 * 30 // 30 jours
+export const CART_PROMO_COOKIE_NAME = 'cart-promo'
 
 /** Limite réelle des cookies côté navigateur. */
 const CART_COOKIE_MAX_BYTES = 4096
