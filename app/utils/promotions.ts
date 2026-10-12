@@ -1,8 +1,11 @@
 export interface CartLine { productId: number, category: string, unitPriceCents: number, quantity: number }
 export interface AppliedDiscount { id: 'BEAUTY_3' | 'TROYES10', label: string, amountCents: number }
+export interface LineDiscount { productId: number, label: string, amountCents: number }
 export interface CartSummary {
   grossCents: number
   discounts: AppliedDiscount[]
+  /** Per-product breakdown of discounts tied to specific items (e.g. the beauty discount), for display on each cart line. Cart-wide discounts (e.g. a promo code) aren't included here. */
+  lineDiscounts: LineDiscount[]
   shippingCents: number
   totalCents: number
   messages: string[]
@@ -31,13 +34,20 @@ function lineTotal(line: CartLine): number {
   return line.unitPriceCents * line.quantity
 }
 
-function beautyDiscount(lines: CartLine[]): AppliedDiscount | null {
+const BEAUTY_LABEL = 'Remise beauté −10 %'
+
+function beautyDiscount(lines: CartLine[]): { discount: AppliedDiscount, lineDiscounts: LineDiscount[] } | null {
   const beautyLines = lines.filter(line => line.category === BEAUTY_CATEGORY)
   const itemCount = beautyLines.reduce((sum, line) => sum + line.quantity, 0)
   if (itemCount < BEAUTY_MIN_ITEMS) return null
 
-  const amountCents = beautyLines.reduce((sum, line) => sum + percentOf(lineTotal(line), BEAUTY_RATE_PERCENT), 0)
-  return { id: 'BEAUTY_3', label: 'Remise beauté −10 %', amountCents }
+  const lineDiscounts = beautyLines.map(line => ({
+    productId: line.productId,
+    label: BEAUTY_LABEL,
+    amountCents: percentOf(lineTotal(line), BEAUTY_RATE_PERCENT)
+  }))
+  const amountCents = lineDiscounts.reduce((sum, discount) => sum + discount.amountCents, 0)
+  return { discount: { id: 'BEAUTY_3', label: BEAUTY_LABEL, amountCents }, lineDiscounts }
 }
 
 type PromoCodeResult =
@@ -67,8 +77,8 @@ export function computeCart(lines: CartLine[], promoCode?: string): CartSummary 
   const messages: string[] = []
 
   const beauty = beautyDiscount(cartLines)
-  if (beauty) discounts.push(beauty)
-  const beautyCents = beauty?.amountCents ?? 0
+  if (beauty) discounts.push(beauty.discount)
+  const beautyCents = beauty?.discount.amountCents ?? 0
 
   const promo = promoCodeDiscount(promoCode, grossCents - beautyCents)
   if (promo.message) messages.push(promo.message)
@@ -90,6 +100,7 @@ export function computeCart(lines: CartLine[], promoCode?: string): CartSummary 
   return {
     grossCents,
     discounts,
+    lineDiscounts: beauty?.lineDiscounts ?? [],
     shippingCents,
     totalCents: grossCents - discountCents + shippingCents,
     messages

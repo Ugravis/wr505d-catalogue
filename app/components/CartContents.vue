@@ -32,6 +32,10 @@ const promoCode = toRef(cart, 'promoCode')
 const promoInput = ref(promoCode.value)
 const summary = useCartSummary(lines, promoCode)
 
+function lineDiscounts(productId: number) {
+  return summary.value.lineDiscounts.filter(discount => discount.productId === productId)
+}
+
 function applyPromoCode() {
   cart.applyPromoCode(promoInput.value)
 }
@@ -137,6 +141,12 @@ function remove(productId: number) {
               <Button size="sm" variant="ghost" @click="remove(line.productId)">Retirer</Button>
             </div>
           </div>
+
+          <ul v-if="lineDiscounts(line.productId).length > 0" class="flex flex-col gap-0.5">
+            <li v-for="discount in lineDiscounts(line.productId)" :key="discount.label" class="text-xs text-green-600">
+              {{ discount.label }} : −{{ formatPriceCents(discount.amountCents) }}
+            </li>
+          </ul>
 
           <p v-if="errors.get(line.productId)" class="text-sm text-destructive">{{ errors.get(line.productId) }}</p>
         </li>
