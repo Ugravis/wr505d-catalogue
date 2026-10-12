@@ -68,7 +68,7 @@ useSeoMeta({
 
 <template>
   <div class="mx-auto max-w-6xl px-4 py-8">
-    <NuxtLink to="/produits" class="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
+    <NuxtLink :to="{ path: '/produits', query: route.query }" class="mb-6 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground">
       <ArrowLeft class="size-4" />
       Retour au catalogue
     </NuxtLink>

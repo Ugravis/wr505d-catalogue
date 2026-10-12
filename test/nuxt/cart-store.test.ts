@@ -16,6 +16,7 @@ async function getStore() {
   // The Pinia store (and its backing cookie) is a singleton shared across
   // tests in this file, so each test starts from a clean cart.
   store.clear()
+  store.applyPromoCode('')
 
   return store
 }
@@ -104,5 +105,13 @@ describe('useCartStore', () => {
 
     expect(cart.quantityInCart(1)).toBe(3)
     expect(cart.quantityInCart(2)).toBe(0)
+  })
+
+  it('applies and trims a promo code', async () => {
+    const cart = await getStore()
+
+    cart.applyPromoCode('  TROYES10  ')
+
+    expect(cart.promoCode).toBe('TROYES10')
   })
 })

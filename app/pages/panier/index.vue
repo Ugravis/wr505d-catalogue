@@ -16,6 +16,9 @@ import { Input } from '@/components/ui/input'
 import { useCartItems } from '@/composables/useCartItems'
 import { useCartSummary } from '@/composables/useCartSummary'
 import { formatPrice, formatPriceCents } from '@/utils/formatPrice'
+import { FREE_SHIPPING_THRESHOLD_CENTS } from '@/utils/promotions'
+
+const thresholdEuros = FREE_SHIPPING_THRESHOLD_CENTS / 100
 
 useSeoMeta({
   title: 'Panier',
@@ -25,12 +28,12 @@ useSeoMeta({
 const cart = useCartStore()
 const { lines, pending, refresh } = useCartItems()
 
-const promoInput = ref('')
-const appliedPromoCode = ref('')
-const summary = useCartSummary(lines, appliedPromoCode)
+const promoCode = toRef(cart, 'promoCode')
+const promoInput = ref(promoCode.value)
+const summary = useCartSummary(lines, promoCode)
 
 function applyPromoCode() {
-  appliedPromoCode.value = promoInput.value.trim()
+  cart.applyPromoCode(promoInput.value)
 }
 
 const errors = reactive(new Map<number, string>())
@@ -178,9 +181,12 @@ function remove(productId: number) {
               <dt>{{ discount.label }}</dt>
               <dd>−{{ formatPriceCents(discount.amountCents) }}</dd>
             </div>
-            <div class="flex justify-between">
-              <dt>Livraison</dt>
-              <dd>{{ summary.shippingCents === 0 ? 'Offerte' : formatPriceCents(summary.shippingCents) }}</dd>
+            <div class="flex flex-col gap-0.5">
+              <div class="flex justify-between">
+                <dt>Livraison</dt>
+                <dd>{{ summary.shippingCents === 0 ? 'Offerte' : formatPriceCents(summary.shippingCents) }}</dd>
+              </div>
+              <p class="text-xs text-muted-foreground">Livraison offerte dès {{ thresholdEuros }} € d'achat.</p>
             </div>
             <div class="flex justify-between border-t pt-2 text-xl font-semibold">
               <dt>Total</dt>
