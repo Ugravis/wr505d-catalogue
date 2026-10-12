@@ -19,7 +19,7 @@ const PROMO_MIN_SUBTOTAL_CENTS = 5000
 const MAX_DISCOUNT_RATE_PERCENT = 25
 
 const SHIPPING_CENTS = 490
-const FREE_SHIPPING_THRESHOLD_CENTS = 8000
+export const FREE_SHIPPING_THRESHOLD_CENTS = 8000
 const NO_FREE_SHIPPING_CATEGORY = 'furniture'
 
 /** Percentage of an integer amount of cents, rounded half up to the cent. */
