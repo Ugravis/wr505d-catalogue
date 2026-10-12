@@ -77,7 +77,7 @@ describe('computeCart — acceptance scenarios', () => {
 
 describe('computeCart — edge cases', () => {
   it('returns an empty summary for an empty cart', () => {
-    expect(computeCart([])).toEqual({ grossCents: 0, discounts: [], shippingCents: 0, totalCents: 0, messages: [] })
+    expect(computeCart([])).toEqual({ grossCents: 0, discounts: [], lineDiscounts: [], shippingCents: 0, totalCents: 0, messages: [] })
   })
 
   it('ignores lines with a zero or negative quantity', () => {
@@ -91,6 +91,18 @@ describe('computeCart — edge cases', () => {
   it('counts beauty quantities across several lines', () => {
     const cart = computeCart([line('beauty', 10, 2, 1), line('beauty', 10, 1, 2)])
     expect(amountOf(cart, 'BEAUTY_3')).toBe(300)
+  })
+
+  it('breaks the beauty discount down per product line', () => {
+    const cart = computeCart([line('beauty', 10, 2, 1), line('beauty', 20, 1, 2), line('groceries', 30, 1, 3)])
+    expect(cart.lineDiscounts).toEqual([
+      { productId: 1, label: 'Remise beauté −10 %', amountCents: 200 },
+      { productId: 2, label: 'Remise beauté −10 %', amountCents: 200 }
+    ])
+  })
+
+  it('has no line discounts when the beauty discount does not apply', () => {
+    expect(computeCart([line('beauty', 10, 2)]).lineDiscounts).toEqual([])
   })
 
   it('does not apply the beauty discount below 3 items', () => {

@@ -14,7 +14,17 @@ export const useAuthStore = defineStore('auth', () => {
     // SSR needs the incoming request's cookies forwarded to the internal
     // /api/auth/me call (useRequestFetch does this); the client-side
     // single-flight wrapper only makes sense once mounted in the browser.
-    const fetcher = import.meta.server ? useRequestFetch() : useApiFetch()
+    // Splitting the two fetchers into separate branches (rather than a
+    // ternary) keeps TS from ever unioning their full (Nitro
+    // route-matching) types, which blows the type-checker's stack
+    // ("Excessive stack depth comparing types").
+    type SimpleFetcher = <T>(request: string) => Promise<T>
+    let fetcher: SimpleFetcher
+    if (import.meta.server) {
+      fetcher = useRequestFetch() as unknown as SimpleFetcher
+    } else {
+      fetcher = useApiFetch() as unknown as SimpleFetcher
+    }
     status.value = 'loading'
 
     try {
@@ -45,7 +55,7 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   async function logout(): Promise<void> {
-    await $fetch('/api/auth/logout', { method: 'POST' }).catch(() => {})
+    await $fetch<unknown>('/api/auth/logout', { method: 'POST' }).catch(() => {})
     user.value = null
     status.value = 'unauthenticated'
   }

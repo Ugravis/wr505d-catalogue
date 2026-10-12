@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Flower, Moon, ShoppingCart, Sun, User } from '@lucide/vue'
+import AppCartSheet from '@/components/AppCartSheet.vue'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -24,7 +25,7 @@ const { theme, toggle: toggleTheme } = useColorMode()
 
         <NuxtLink
           to="/panier"
-          class="relative inline-flex size-10 items-center justify-center rounded-md hover:bg-accent"
+          class="relative inline-flex size-10 items-center justify-center rounded-md hover:bg-accent md:hidden"
           aria-label="Voir le panier"
         >
           <ShoppingCart class="size-5" />
@@ -35,6 +36,8 @@ const { theme, toggle: toggleTheme } = useColorMode()
             {{ cart.itemCount }}
           </Badge>
         </NuxtLink>
+
+        <AppCartSheet />
 
         <NuxtLink
           v-if="auth.status === 'authenticated'"

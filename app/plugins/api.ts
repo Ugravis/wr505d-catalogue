@@ -4,8 +4,13 @@ import { singleFlight } from '@/utils/singleFlight'
 type ApiFetchRequest = Parameters<typeof $fetch>[0]
 type ApiFetchOptions = Parameters<typeof $fetch>[1]
 
+const REFRESH_ENDPOINT = '/api/auth/refresh'
+
 export default defineNuxtPlugin(() => {
-  const refreshOnce = singleFlight(() => $fetch('/api/auth/refresh', { method: 'POST' }))
+  // Explicit <unknown> keeps TS from inferring the return type from the
+  // literal route (which blows the type-checker's stack: "Excessive stack
+  // depth comparing types" — a known cost of Nitro's typed-route matching).
+  const refreshOnce = singleFlight(() => $fetch<unknown>(REFRESH_ENDPOINT, { method: 'POST' }))
 
   async function apiFetch<T>(request: ApiFetchRequest, options?: ApiFetchOptions): Promise<T> {
     try {
