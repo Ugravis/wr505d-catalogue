@@ -1,5 +1,11 @@
 {
   "name": "catalogue",
+  "version": "0.1.0",
+  "description": "Catalogue e-commerce BUT3 (Nuxt 3/Vue 3) consommant l'API DummyJSON.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ugravis/wr505d-catalogue"
+  },
   "type": "module",
   "private": true,
   "scripts": {
