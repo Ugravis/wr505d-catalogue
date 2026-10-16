@@ -1,75 +1,59 @@
-# Nuxt Minimal Starter
+# Catalogue
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+Projet BUT3 (WR505D) : catalogue e-commerce développé avec Nuxt 3/Vue 3, consommant l'API [DummyJSON](https://dummyjson.com/) pour les produits et l'authentification. Fonctionnalités principales : recherche/filtres/tri de produits, fiche produit, panier avec persistance par cookie, moteur de promotions, authentification (connexion/compte).
 
-## Setup
+## Stack technique
 
-Make sure to install dependencies:
+- [Nuxt 4](https://nuxt.com) / [Vue 3](https://vuejs.org) (`<script setup>`, TypeScript strict)
+- [Pinia](https://pinia.vuejs.org) pour la gestion d'état (panier, authentification)
+- [shadcn-vue](https://www.shadcn-vue.com) / [Tailwind CSS 4](https://tailwindcss.com) pour le design
+- [Vitest](https://vitest.dev) (tests unitaires et Nuxt) et [Playwright](https://playwright.dev) (tests end-to-end)
+- ESLint strict (`@typescript-eslint/no-explicit-any` en erreur — aucun `any` dans le code)
+
+## Installation
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Développement
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+L'application est servie sur `http://localhost:3000`.
 
-Build the application for production:
+## Build & prévisualisation
 
 ```bash
-# npm
 npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+npm run preview
 ```
 
-Locally preview production build:
+## Qualité & tests
 
 ```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
+npm run lint          # ESLint
+npm run typecheck     # vue-tsc
+npm run test          # Vitest (unitaires + Nuxt)
+npm run test:coverage # Vitest avec couverture
+npm run test:e2e      # Playwright
+npm run check-all     # lint + typecheck + test:coverage
 ```
 
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+## Conventions de contribution
+
+- **Gitflow** : branches `main` et `develop` protégées (jamais de commit direct), développement sur des branches `feature/<n°>-<description>`.
+- **Conventional Commits** pour les messages de commit (`feat`, `fix`, `docs`, `chore`, `test`, …).
+- **Principes SOLID** pour l'architecture du code.
+- Utilisation de milestones et labels GitHub pour le suivi.
+- Les pull requests sont gérées par le mainteneur du projet.
+
+## Traçabilité de l'usage de l'IA
+
+Chaque prompt adressé à un outil d'IA générative dans le cadre de ce projet est consigné dans [`docs/ai-usage/`](docs/ai-usage/) (un fichier par contributeur), avec la date, le prompt, les réponses aux questions posées par l'agent, et un résumé du résultat.
+
+## Dépôt
+
+[github.com/Ugravis/wr505d-catalogue](https://github.com/Ugravis/wr505d-catalogue)
